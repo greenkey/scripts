@@ -4,11 +4,11 @@ if [ -z "$2" ]
 then
     echo "Two parameters required: [task_url] and [branch_slug]."
     echo "Example:"
-    echo "  ,asana_branch https://app.asana.com/0/0/1203865252492526/f myname/new_feature"
+    echo "  ,asana_branch https://app.asana.com/0/0/1234567890123456/f myname/new_feature"
     exit 1
 fi
 
-# https://app.asana.com/0/0/1203865252492526/f
+# https://app.asana.com/0/0/1234567890123456/f
 TASK_ID=`echo $1 | awk -F'/' '{print $6}'`
 echo BRANCH_SLUG=$2
 echo TASK_ID=$TASK_ID
