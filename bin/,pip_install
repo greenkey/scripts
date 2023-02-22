@@ -1,0 +1,22 @@
+#!/bin/sh
+# install a package and add it to requirements.txt
+# usage: pip_install [package] [requirements_file_name]
+# default requirements_file_name is requirements.txt
+
+
+if [ -z "$1" ]
+then
+    echo "One parameter required: [pip package]."
+    exit 1
+fi
+PACKAGE=$1
+
+if [ -z "$2" ]
+then
+    echo "file not specified, default to requirements.txt"
+    REQ_FILE=requirements.txt
+else
+    REQ_FILE=$2
+fi
+
+pip install $PACKAGE && pip freeze | rg $PACKAGE >> $REQ_FILE
