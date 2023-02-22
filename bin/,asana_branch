@@ -1,18 +1,48 @@
 #!/bin/sh
 
-if [ -z "$2" ]
-then
+usage()
+{
     echo "Two parameters required: [task_url] and [branch_slug]."
     echo "Example:"
     echo "  ,asana_branch https://app.asana.com/0/0/1234567890123456/f myname/new_feature"
+    echo
+    echo "If you set the ASANA_ACCESS_TOKEN env var, the tile will be used"
+    echo "more info: https://developers.asana.com/docs/personal-access-token"
     exit 1
-fi
+}
 
 # https://app.asana.com/0/0/1234567890123456/f
 TASK_ID=`echo $1 | awk -F'/' '{print $6}'`
-echo BRANCH_SLUG=$2
 echo TASK_ID=$TASK_ID
-BRANCH_NAME=$2/$TASK_ID
+
+if [ ! -z "${ASANA_ACCESS_TOKENs}" ]
+then
+    # if asana api token is set, get task title from asana
+    curl --request GET \
+         --url https://app.asana.com/api/1.0/tasks/$TASK_ID \
+         -H "Authorization: Bearer $ASANA_ACCESS_TOKEN" \
+         --header 'accept: application/json' \
+         -s > /tmp/asana.json
+    TITLE=$(cat /tmp/asana.json | jq '.data.name' | tr -d '"')
+else
+    # otherwise, get it from the second parameter
+    echo "ASANA_ACCESS_TOKEN env variable is not set, getting branch slug from parameters"
+    if [ -z "$2" ]
+    then
+        usage
+    fi
+    TITLE=$2
+fi
+
+
+# if branch slug contains spaces, replace them with underscores
+# https://stackoverflow.com/a/1252191/104370
+BRANCH_SLUG=`echo $TITLE | sed 's/ /_/g'`
+# make it all lowercase
+BRANCH_SLUG=`echo $BRANCH_SLUG | tr '[:upper:]' '[:lower:]'`
+echo BRANCH_SLUG=$BRANCH_SLUG
+
+BRANCH_NAME=$BRANCH_SLUG/$TASK_ID
 echo BRANCH_NAME=$BRANCH_NAME
 
 git checkout master
