@@ -15,7 +15,7 @@ usage()
 TASK_ID=`echo $1 | awk -F'/' '{print $6}'`
 echo TASK_ID=$TASK_ID
 
-if [ ! -z "${ASANA_ACCESS_TOKENs}" ]
+if [ ! -z "${ASANA_ACCESS_TOKEN}" ]
 then
     # if asana api token is set, get task title from asana
     curl --request GET \
