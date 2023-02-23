@@ -37,7 +37,7 @@ fi
 
 # if branch slug contains spaces, replace them with underscores
 # https://stackoverflow.com/a/1252191/104370
-BRANCH_SLUG=`echo $TITLE | sed 's/ /_/g'`
+BRANCH_SLUG=`echo $TITLE | tr ' ' '_' | tr '/' '_'`
 # make it all lowercase
 BRANCH_SLUG=`echo $BRANCH_SLUG | tr '[:upper:]' '[:lower:]'`
 echo BRANCH_SLUG=$BRANCH_SLUG
