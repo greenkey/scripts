@@ -1,0 +1,14 @@
+#!/bin/sh
+
+# finds all TODOs and FIXMEs in the codebase
+# usage:
+#   ,find-todos [git grep options]
+# example:
+#   ,find-todos -- '*.py'
+# the results are sorted by date, oldes in the bottom
+
+git grep -n '# *\(TODO\|FIXME\)' "$@" | \
+    while IFS=: read i j k; do echo $i $(git blame -L $j,$j $i); done | \
+    awk '{match($0, /(TODO|FIXME).*$/); print $1 " " $2 " " substr($0, RSTART, RLENGTH)}' | \
+    while read file sha comment; do echo $(git log -1 --pretty=format:%ai $sha) $file $comment; done | \
+    sort -hr
